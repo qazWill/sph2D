@@ -1,5 +1,7 @@
-import math
+import math, pygame
 
+def distance(a, b):
+	return math.sqrt(math.pow(a[0]-b[0], 2), math.pow(a[1] - b[1], 2))
 
 # used in summations 
 # assigns weight to values by proximity
@@ -42,15 +44,17 @@ def viscocitySmoothing(r, h):
 
 class Particle:
 
-	def __init__(self, pos, r, mass, density):
+	def __init__(self, pos, r, mass):
 
 		self.pos = pos 
+		self.vel = [0, 0]
 		self.radius = r
 		self.mass = mass
-		self.density = density
+		self.density = 0 
+		self.pressure = 0
 
 
-class Simulation:
+class FluidSimulation:
 
 	def __init__(self, width, height):
 
@@ -58,8 +62,79 @@ class Simulation:
 		self.height = height
 		self.particles = []
 
+		# simulation constants
+		self.smoothingDist = 60
+		self.restDensity = 0.008
+		self.k = 1
+
+	def addParticle(self, pos):
+		self.particles.append(Particle(pos, 6, 1,))
+
 	def display(self, screen):
 		for particle in self.particles:
 			pygame.draw.circle(screen, (0, 0, 255), particle.pos, particle.radius)
 
+	def update(self, deltaTime):
+
+
+		# recalculate pressure and density first since they are used in other formulas 
+		for particle in particles:
+
+			# density
+			particle.density = 0
+			for other in particles:
+				if particle == other:
+					continue
+				particle.density += other.mass * generalSmoothing(distance(particle.pos, other.pos), self.smoothingDist)
+
+			# pressure
+			particle.pressure = self.k * (particle.density - self.restDensity)
+
+		# recalculate forces, acceleration, and velocities
+		for particle in particles
+		
+			# calculate pressure force
+			pressureForce = [0, 0]
+			for other in particles:
+				if particle == other:
+					continue
+				r = distance(particle.pos, other.pos)
+				magnitude = other.mass * (particle.pressure + other.pressure) / other.density
+				magnitude *= pressureSmoothing(r, self.smoothingDist)
+				direction = particle.pos
+				direction[0] -= other.pos[0]
+				direction[1] -= other.pos[1]
+				direction[0] /= r
+				direction[1] / = r
+				pressureForce[0] += direction[0] * magnitude
+				pressureForce[1] += direction[1] * magnitude
+
+
+			# calculate viscocity force
+
+
+			# calculate surface tension force
+				
+					
+			# calculate force from wall collisions		
+			
+
+			# sum forces and calculate new velocities
+					
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
