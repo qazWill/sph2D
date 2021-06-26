@@ -33,7 +33,7 @@ def pressureSmoothing(r, h):
 # assigns weight to values by proximity
 # r - neighboring particle's distance away
 # h - maximum distance before receiving weight of 0
-def viscocitySmoothing(r, h):
+def flowSmoothing(r, h):
 	if r >= h:
 		return 0	
 	else:
@@ -93,12 +93,14 @@ class FluidSimulation:
 		# recalculate forces, acceleration, and velocities
 		for particle in particles
 		
+			# distance is used in most of the following calculations		
+			r = distance(particle.pos, other.pos)
+		
 			# calculate pressure force
 			pressureForce = [0, 0]
 			for other in particles:
 				if particle == other:
 					continue
-				r = distance(particle.pos, other.pos)
 				magnitude = other.mass * (particle.pressure + other.pressure) / other.density
 				magnitude *= pressureSmoothing(r, self.smoothingDist)
 				direction = particle.pos
@@ -110,16 +112,37 @@ class FluidSimulation:
 				pressureForce[1] += direction[1] * magnitude
 
 
-			# calculate viscocity force
+			# calculate flow force
+			flowForce = [0, 0]
+			for other in particles:
+				if particle == other:
+					continue	
+				deltaForce = [0, 0]
+				delta[0] = (other.vel[0] - particle.vel[0]) / other.density
+				delta[1] = (other.vel[1] - particle.vel[1]) / other.density
+				delta[0] *= flowSmoothing(r, self.smoothingDist) # this could be wrong!
+				delta[1] *= flowSmoothing(r, self.smoothingDist) # this could be wrong!
+				flowForce[0] += delta[0]
+				flowForce[1] += delta[1]
+				
 
 
 			# calculate surface tension force
+			surfaceTensiionForce = [0, 0]
 				
 					
 			# calculate force from wall collisions		
 			
 
 			# sum forces and calculate new velocities
+			totalForce = [0, 0] 
+			totalForce[0] = pressureForce[0] + flowForce[0] + surfaceTensionForce[0]
+			totalForce[1] = pressureForce[1] + flowForce[1] + surfaceTensionForce[1]
+			accel = [0, 0]
+			accel[0] = totalForce[0] / particle.density
+			accel[1] = totalForce[1] / particle.density
+			particle.vel[0] += accel[0] * deltaTime
+			particle.vel[1] += accel[1] * deltaTime
 					
 	
 
