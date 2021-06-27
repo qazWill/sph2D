@@ -12,7 +12,7 @@ while True:
 			sys.exit()
 			
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			sim.addParticle(event.pos)
+			sim.addParticle(list(event.pos))
 
 	deltaTime = clock.tick(60)
 	sim.update(deltaTime)
